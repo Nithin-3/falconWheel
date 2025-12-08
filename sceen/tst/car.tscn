@@ -1,7 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://b6tej1s4gp3yt"]
+[gd_scene load_steps=11 format=3 uid="uid://b6tej1s4gp3yt"]
 
 [ext_resource type="Script" uid="uid://c7d1fjnadq817" path="res://script/base/car.gd" id="1_5m0bv"]
 [ext_resource type="Script" uid="uid://3164r7lhcfk8" path="res://script/base/wheel.gd" id="2_dqsdb"]
+
+[sub_resource type="Curve" id="Curve_5n315"]
+_data = [Vector2(0, 0.34831464), 0.0, 0.0, 0, 0, Vector2(0.2880435, 0.94382024), 0.0, 0.0, 0, 0, Vector2(0.7173913, 0.8314607), 0.0, 0.0, 0, 0, Vector2(0.9891305, 0.3146068), 0.0, 0.0, 0, 0]
+point_count = 4
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dqsdb"]
 albedo_color = Color(0.05490196, 1, 1, 1)
@@ -18,6 +22,10 @@ size = Vector3(1.5, 0.3, 0.3)
 [sub_resource type="BoxShape3D" id="BoxShape3D_1ba30"]
 size = Vector3(1, 0.5, 2)
 
+[sub_resource type="Curve" id="Curve_dqsdb"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.17934784, 0.3146068), 0.0, 0.0, 0, 0, Vector2(0.9891305, 0.15730345), 0.0, 0.0, 0, 0]
+point_count = 3
+
 [sub_resource type="CylinderMesh" id="CylinderMesh_5m0bv"]
 top_radius = 0.3
 bottom_radius = 0.3
@@ -26,6 +34,7 @@ height = 0.05
 [node name="RigidBody3D" type="RigidBody3D" node_paths=PackedStringArray("wheels")]
 script = ExtResource("1_5m0bv")
 wheels = [NodePath("wheelFL"), NodePath("wheelFR"), NodePath("wheelRL"), NodePath("wheelRR")]
+accelCurv = SubResource("Curve_5n315")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_dqsdb")
@@ -43,6 +52,8 @@ shape = SubResource("BoxShape3D_1ba30")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.54468036, -0.097212136, -0.6100261)
 enabled = false
 script = ExtResource("2_dqsdb")
+deg = 25
+grip = SubResource("Curve_dqsdb")
 
 [node name="wheel" type="MeshInstance3D" parent="wheelFL"]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.217693, 0)
@@ -52,6 +63,8 @@ mesh = SubResource("CylinderMesh_5m0bv")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5575825, -0.097212136, -0.6100261)
 enabled = false
 script = ExtResource("2_dqsdb")
+deg = 25
+grip = SubResource("Curve_dqsdb")
 
 [node name="wheel" type="MeshInstance3D" parent="wheelFR"]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -0.008778691, -0.217693, 0)
@@ -63,6 +76,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.54468036, -0.097212136, 0.
 enabled = false
 script = ExtResource("2_dqsdb")
 is_acc = true
+grip = SubResource("Curve_dqsdb")
 
 [node name="wheel" type="MeshInstance3D" parent="wheelRL"]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.217693, -0.008869648)
@@ -74,6 +88,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5575825, -0.097212136, 0.57
 enabled = false
 script = ExtResource("2_dqsdb")
 is_acc = true
+grip = SubResource("Curve_dqsdb")
 
 [node name="wheel" type="MeshInstance3D" parent="wheelRR"]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -0.008778691, -0.217693, -0.008869648)

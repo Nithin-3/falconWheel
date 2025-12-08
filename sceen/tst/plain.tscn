@@ -1,26 +1,15 @@
-[gd_scene load_steps=11 format=3 uid="uid://dctoxy2rm24sb"]
+[gd_scene load_steps=8 format=3 uid="uid://dctoxy2rm24sb"]
 
 [ext_resource type="Script" uid="uid://upcptai84w5b" path="res://script/base/camera_3d.gd" id="1_lupjc"]
 [ext_resource type="PackedScene" uid="uid://b6tej1s4gp3yt" path="res://sceen/tst/car.tscn" id="1_s48ce"]
-[ext_resource type="Texture2D" uid="uid://cx5a4x5fxj6yd" path="res://icon.svg" id="2_mxhgn"]
+[ext_resource type="PackedScene" uid="uid://dlais53abeb61" path="res://3d/tstG.glb" id="3_lupjc"]
 
 [sub_resource type="Curve" id="Curve_lupjc"]
-_data = [Vector2(0.0010857759, 0.32244033), 0.0, 0.0, 0, 0, Vector2(0.23887077, 0.8844658), 0.0, 0.0, 0, 0, Vector2(0.31813243, 0.8892797), 0.0, 0.0, 0, 0, Vector2(0.3838219, 0.9289946), 0.0, 0.0, 0, 0, Vector2(0.713355, 0.7460655), 0.0, 0.0, 0, 0, Vector2(0.99945706, 0.11905205), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 0.48314613), 0.0, 0.0, 0, 0, Vector2(0.23913044, 0.8764045), 0.0, 0.0, 0, 0, Vector2(0.41847825, 0.8764045), 0.3758937, 0.3758937, 0, 0, Vector2(0.5706522, 0.8988764), 0.0, 0.0, 0, 0, Vector2(0.8532609, 0.7415731), 0.0, 0.0, 0, 0, Vector2(1, 0.6741574), 0.0, 0.0, 0, 0]
 point_count = 6
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4p1xh"]
-albedo_texture = ExtResource("2_mxhgn")
-albedo_texture_force_srgb = true
-metallic = 0.61
-
-[sub_resource type="BoxMesh" id="BoxMesh_m5lu8"]
-size = Vector3(1000, 0.7, 1000)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_25nfb"]
 size = Vector3(1000, 0.7, 1000)
-
-[sub_resource type="BoxMesh" id="BoxMesh_lupjc"]
-size = Vector3(1, 1, 1000)
 
 [sub_resource type="Environment" id="Environment_s48ce"]
 
@@ -29,29 +18,23 @@ size = Vector3(1, 1, 1000)
 [node name="plain" type="Node3D"]
 
 [node name="car" parent="." instance=ExtResource("1_s48ce")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3386784, 2.2020178, 0)
-mass = 1000.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3386784, 2.977066, 7.3648863)
+mass = 10.0
 accelCurv = SubResource("Curve_lupjc")
-maxspeed = 40.0
 
 [node name="Camera3D" type="Camera3D" parent="car" node_paths=PackedStringArray("car")]
-transform = Transform3D(-4.2942276e-08, -0.029038206, -0.9995783, -8.163718e-09, 0.9995783, -0.029038206, 1, 6.9133086e-09, -4.3161226e-08, -4.404821, 2.719967, 0.053724766)
+transform = Transform3D(-4.2942276e-08, -0.029038206, -0.9995783, -8.163718e-09, 0.9995783, -0.029038206, 1, 6.9133086e-09, -4.3161226e-08, 0.04173374, 0.8531108, 3.1223993)
 fov = 82.240974
 script = ExtResource("1_lupjc")
 car = NodePath("..")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-material_override = SubResource("StandardMaterial3D_4p1xh")
-mesh = SubResource("BoxMesh_m5lu8")
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
 shape = SubResource("BoxShape3D_25nfb")
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.205717, 0, 0)
-mesh = SubResource("BoxMesh_lupjc")
+[node name="tstG" parent="StaticBody3D" instance=ExtResource("3_lupjc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.40949368, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_s48ce")
