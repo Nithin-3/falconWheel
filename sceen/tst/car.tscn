@@ -23,7 +23,7 @@ size = Vector3(1.5, 0.3, 0.3)
 size = Vector3(1, 0.5, 2)
 
 [sub_resource type="Curve" id="Curve_dqsdb"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.17934784, 0.3146068), 0.0, 0.0, 0, 0, Vector2(0.9891305, 0.15730345), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.103260875, 0.44943827), 0.0, 0.0, 0, 0, Vector2(0.9891305, 0.15730345), 0.0, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_5m0bv"]
@@ -52,7 +52,7 @@ shape = SubResource("BoxShape3D_1ba30")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.54468036, -0.097212136, -0.6100261)
 enabled = false
 script = ExtResource("2_dqsdb")
-deg = 25
+deg = 30
 grip = SubResource("Curve_dqsdb")
 
 [node name="wheel" type="MeshInstance3D" parent="wheelFL"]
@@ -63,7 +63,7 @@ mesh = SubResource("CylinderMesh_5m0bv")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5575825, -0.097212136, -0.6100261)
 enabled = false
 script = ExtResource("2_dqsdb")
-deg = 25
+deg = 30
 grip = SubResource("Curve_dqsdb")
 
 [node name="wheel" type="MeshInstance3D" parent="wheelFR"]
