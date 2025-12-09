@@ -3,8 +3,9 @@ class_name  wheel
 
 @export_category("wheels")
 @export var wheels: Array[RayCast3D]
-@export var suspensionStrength:= 450.0
+@export var suspensionStrength:= 400.0
 @export var suspensionDamping:= 100.0
+@export var susprnsionMax:float = INF
 @export var suspensionPivot := 0.5
 @export var wheelRadius:=0.5
 @export var positionAdjust:=0.0
@@ -23,9 +24,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	force_raycast_update()
-	#suspension(forceDir)
-	#accelerate(forceDir,delta)
-	#steering(forceDir,delta)
 	apply(delta)
 
 func dist(point1:Vector3,point2:Vector3)->float:
@@ -33,13 +31,13 @@ func dist(point1:Vector3,point2:Vector3)->float:
 	return pow(d,0.5)
 
 func getLocVelo(point:Vector3)->Vector3:
-	return car.linear_velocity + car.angular_velocity.cross(point - car.global_position)
+	return car.linear_velocity + car.angular_velocity.cross(point - to_global(car.center_of_mass))
 
 func apply(delta:float):
 	var forceDir := tier.global_position - car.global_position # A − B = direction and distance from B to A
 	var turn := Input.get_axis("right","left") * turnSpeed
 	var move := Input.get_axis("back","front")
-	var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
+	var gravity = -car.get_gravity().y
 	
 	var carBasis := car.global_basis
 	if turn and deg:
@@ -54,17 +52,20 @@ func apply(delta:float):
 	target_position.y = -(suspensionPivot + wheelRadius + positionAdjust)
 	var normal := get_collision_normal()
 	var contact = get_collision_point()
-	var springLen := dist(global_position,contact) - wheelRadius
-	tier.position.y =  -springLen
-	var vr := normal.dot(getLocVelo(contact)) # Fdamper​=−c Vrel
-	var fY := normal * ((suspensionStrength * (suspensionPivot - springLen)) - (suspensionDamping * vr)) # F = k * x - c * v
+	var springLen := maxf(0.0,dist(global_position,contact) - wheelRadius)
+	tier.position.y =  move_toward(tier.position.y,-springLen,5*delta)
+	var vr := global_basis.y.dot(getLocVelo(contact)) # Fdamper​=−c Vrel
+	var suspF := clampf((suspensionStrength * (suspensionPivot - springLen)) - (suspensionDamping * vr),-susprnsionMax,susprnsionMax)
+	var fY := normal * suspF # F = k * x - c * v
 	
 	#stearing
 	var v := getLocVelo(tier.global_position)
 	var spedX := global_basis.x.dot(v) # * delta
 	var spedZ := global_basis.z.dot(v) # * delta
-	var friction := grip.sample_baked(absf(spedX/v.length()))
+	var friction := grip.sample_baked(0.0 if absf(spedX) < 0.2 else absf(spedX/v.length()))
 	var drag := 0.04
+	if absf(spedZ) < 0.01:
+		drag = 2.0
 	var fX :Vector3 = -global_basis.x * spedX * friction * car.mass*gravity*0.25
 	var fZ :Vector3 = -global_basis.z * spedZ * drag * car.mass*gravity*0.25
 	
@@ -74,9 +75,15 @@ func apply(delta:float):
 		var ac := car.accelCurv.sample_baked(spedZ/car.maxspeed)
 		var a := -global_basis.z * car.acceleration * move * ac
 		car.apply_force(a,forceDir)
-		DebugDraw3D.draw_arrow_ray(tier.global_position,a/car.mass,1,Color.RED,0.1)
+		DebugDraw3D.draw_arrow_ray(tier.global_position,a/car.mass,1,Color.RED,0.05)
+	
+	#counter
+	if absf(spedZ) < 0.01:
+		var susp = suspF * global_basis.y
+		fX.x -= susp.x * car.global_basis.y.dot(Vector3.UP)
+		fZ.z -= susp.z * car.global_basis.y.dot(Vector3.UP)
 	
 	car.apply_force(fY+fX+fZ,forceDir)
-	DebugDraw3D.draw_arrow_ray(tier.global_position,fY/car.mass,1,Color.GREEN,0.1)
-	DebugDraw3D.draw_arrow_ray(tier.global_position,fX/car.mass,1,Color.BLUE,0.1)
-	DebugDraw3D.draw_arrow_ray(tier.global_position,fZ/car.mass,1,Color.REBECCA_PURPLE,0.1)
+	DebugDraw3D.draw_arrow_ray(tier.global_position,fY/car.mass,1,Color.GREEN,0.05)
+	DebugDraw3D.draw_arrow_ray(tier.global_position,fX/car.mass,1,Color.BLUE,0.05)
+	DebugDraw3D.draw_arrow_ray(tier.global_position,fZ/car.mass,1,Color.REBECCA_PURPLE,0.05)
