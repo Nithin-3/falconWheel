@@ -8,8 +8,8 @@
 _data = [Vector2(0, 0.48314613), 0.0, 0.0, 0, 0, Vector2(0.23913044, 0.8764045), 0.0, 0.0, 0, 0, Vector2(0.41847825, 0.8764045), 0.3758937, 0.3758937, 0, 0, Vector2(0.5706522, 0.8988764), 0.0, 0.0, 0, 0, Vector2(0.8532609, 0.7415731), 0.0, 0.0, 0, 0, Vector2(1, 0.6741574), 0.0, 0.0, 0, 0]
 point_count = 6
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_25nfb"]
-size = Vector3(1000, 0.7, 1000)
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lupjc"]
+points = PackedVector3Array(-192.82895, 0, -192.82895, -192.82895, 0, 192.82895, 192.82895, 0, -192.82895, 192.82895, 0, 192.82895)
 
 [sub_resource type="Environment" id="Environment_s48ce"]
 
@@ -30,11 +30,14 @@ car = NodePath("..")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("BoxShape3D_25nfb")
-
 [node name="tstG" parent="StaticBody3D" instance=ExtResource("3_lupjc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.40949368, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StaticBody3D/tstG/Plane" index="0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D/tstG/Plane/StaticBody3D"]
+transform = Transform3D(0.9999999, 0, 0, 0, 2.1899495, 0, 0, 0, 1.0176072, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_lupjc")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_s48ce")
@@ -42,3 +45,5 @@ camera_attributes = SubResource("CameraAttributesPractical_mxhgn")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 0.6191762, 0.78525203, 0, -0.78525203, 0.6191762, 0, 4.0316787, 2.5515091)
+
+[editable path="StaticBody3D/tstG"]
