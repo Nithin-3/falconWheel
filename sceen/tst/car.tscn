@@ -23,7 +23,7 @@ size = Vector3(1.5, 0.3, 0.3)
 size = Vector3(1, 0.5, 2)
 
 [sub_resource type="Curve" id="Curve_dqsdb"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.103260875, 0.44943827), 0.0, 0.0, 0, 0, Vector2(0.9891305, 0.15730345), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.625, 0.24719107), 0.0, 0.0, 0, 0, Vector2(0.9891305, 0.15730345), 0.0, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_5m0bv"]
@@ -49,8 +49,8 @@ mesh = SubResource("BoxMesh_7ef76")
 shape = SubResource("BoxShape3D_1ba30")
 
 [node name="wheelFL" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.54468036, -0.097212136, -0.6100261)
-enabled = false
+process_physics_priority = -1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.54468036, 0.04664904, -0.6100261)
 script = ExtResource("2_dqsdb")
 deg = 30
 grip = SubResource("Curve_dqsdb")
@@ -60,8 +60,8 @@ transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -
 mesh = SubResource("CylinderMesh_5m0bv")
 
 [node name="wheelFR" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5575825, -0.097212136, -0.6100261)
-enabled = false
+process_physics_priority = -1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5575825, 0.04664904, -0.6100261)
 script = ExtResource("2_dqsdb")
 deg = 30
 grip = SubResource("Curve_dqsdb")
@@ -72,8 +72,8 @@ mesh = SubResource("CylinderMesh_5m0bv")
 skeleton = NodePath("../../wheelFL")
 
 [node name="wheelRL" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.54468036, -0.097212136, 0.5716158)
-enabled = false
+process_physics_priority = -1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.54468036, 0.04664904, 0.5716158)
 script = ExtResource("2_dqsdb")
 is_acc = true
 grip = SubResource("Curve_dqsdb")
@@ -84,8 +84,8 @@ mesh = SubResource("CylinderMesh_5m0bv")
 skeleton = NodePath("../../wheelFL")
 
 [node name="wheelRR" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5575825, -0.097212136, 0.5716158)
-enabled = false
+process_physics_priority = -1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5575825, 0.04664904, 0.5716158)
 script = ExtResource("2_dqsdb")
 is_acc = true
 grip = SubResource("Curve_dqsdb")

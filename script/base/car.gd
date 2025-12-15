@@ -6,8 +6,8 @@ class_name  Car
 @export var accelCurv:Curve
 @export var maxspeed := 50.0
 
-func _ready() -> void:
-	pass
-func _physics_process(_delta: float) -> void:
 
+func _physics_process(delta: float) -> void:
+	for w in wheels:
+		w.apply(delta)
 	DebugDraw3D.draw_arrow_ray(global_position+Vector3.UP,linear_velocity,1,Color.YELLOW,0.05)

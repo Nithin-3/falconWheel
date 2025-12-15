@@ -1,30 +1,40 @@
 extends RayCast3D
 class_name  wheel
 
-@export_category("wheels")
-@export var wheels: Array[RayCast3D]
-@export var suspensionStrength:= 400.0
-@export var suspensionDamping:= 100.0
-@export var susprnsionMax:float = INF
+@export_category("Suspension")
+@export var suspDist := 0.1
 @export var suspensionPivot := 0.5
-@export var wheelRadius:=0.5
+@export_category("Dimention")
+@export var wheelRadius:=0.3
 @export var positionAdjust:=0.0
+@export_category("Accelerat")
 @export var is_acc=false
-@export var deg := 0
+@export_category("Turn")
+@export var deg := 0 ## set non zero value to turn
 @export var turnSpeed := 2.0
+@export_category("Friction")
 @export var grip:Curve
+@export var airDensity := 5
+@export var drag := 0.02
+
+@export var rollFrict := 0.5
 
 @onready var tier:Node3D = get_child(0)
 @onready var car:Car = get_parent()
 var breakZ := false
+var k:float
+var c:float
 
 func _unhandled_input(event: InputEvent) -> void:
-	breakZ = true if event.is_action_pressed("break") else false
+	if event.is_action_pressed("break"):
+		breakZ = true
+	elif  event.is_action_released("break"):
+		breakZ =  false
 
-
-func _physics_process(delta: float) -> void:
-	force_raycast_update()
-	apply(delta)
+func _ready() -> void:
+	var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
+	k = (car.mass/4 *gravity)/suspDist # k= m*g/x
+	c = int(sqrt(k*car.mass/4 )) * 0.8 # c= sqrt(k*m) * dampRatio -> 0.7 - 0.9
 
 func dist(point1:Vector3,point2:Vector3)->float:
 	var d = pow(point1.x-point2.x,2)+pow(point1.y-point2.y,2)+pow(point1.z-point2.z,2)
@@ -41,7 +51,7 @@ func apply(delta:float):
 	
 	var carBasis := car.global_basis
 	if turn and deg:
-		rotation.y = clamp(rotation.y + turn * delta,deg_to_rad(-deg),deg_to_rad(deg))
+		rotation.y = clamp(rotation.y + turn * delta* 0.3,deg_to_rad(-deg),deg_to_rad(deg))
 	else :
 		rotation.y = move_toward(rotation.y,0,turnSpeed*delta)
 		var vl := car.linear_velocity
@@ -55,25 +65,28 @@ func apply(delta:float):
 	var springLen := maxf(0.0,dist(global_position,contact) - wheelRadius)
 	tier.position.y =  move_toward(tier.position.y,-springLen,5*delta)
 	var vr := global_basis.y.dot(getLocVelo(contact)) # Fdamper​=−c Vrel
-	var suspF := clampf((suspensionStrength * (suspensionPivot - springLen)) - (suspensionDamping * vr),-susprnsionMax,susprnsionMax)
+	var suspF := k * (suspensionPivot - springLen) - c * vr
 	var fY := normal * suspF # F = k * x - c * v
+	#car.apply_torque(-forceDir.cross(fY))
 	
 	#stearing
 	var v := getLocVelo(tier.global_position)
-	var spedX := global_basis.x.dot(v) # * delta
-	var spedZ := global_basis.z.dot(v) # * delta
+	var spedX := global_basis.x.dot(v)
+	var spedZ := global_basis.z.dot(v)
+	var speedRati = clamp(spedZ/car.maxspeed,0.0,1.0)
 	var friction := grip.sample_baked(0.0 if absf(spedX) < 0.2 else absf(spedX/v.length()))
-	var drag := 0.04
-	if absf(spedZ) < 0.01:
-		drag = 2.0
+	var brake = clamp(Input.get_action_strength("break"),0.03,0.3)
+	drag = 2.0 if absf(spedZ) < 0.01 else brake
+	drag = move_toward(drag,Input.get_action_strength("break"),delta*speedRati)
 	var fX :Vector3 = -global_basis.x * spedX * friction * car.mass*gravity*0.25
-	var fZ :Vector3 = -global_basis.z * spedZ * drag * car.mass*gravity*0.25
+	var fZ :Vector3 = -global_basis.z * pow(spedZ,2) * drag * rollFrict * gravity * sign(int(spedZ)) ## reality vector point weight + force
+	#DebugDraw3D.draw_arrow_ray(tier.global_position,fR,1,Color.BLUE,0.05)
 	
 	#acceleration
 	if is_acc and move:
 		#tier.rotate_x(-spedZ / wheelRadius * delta) # rotate tier
-		var ac := car.accelCurv.sample_baked(spedZ/car.maxspeed)
-		var a := -global_basis.z * car.acceleration * move * ac
+		var ac := car.accelCurv.sample_baked(speedRati)
+		var a := -global_basis.z * (car.acceleration) * move * ac
 		car.apply_force(a,forceDir)
 		DebugDraw3D.draw_arrow_ray(tier.global_position,a/car.mass,1,Color.RED,0.05)
 	
